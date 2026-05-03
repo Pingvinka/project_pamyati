@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Открываем имена и точки на карте | Мемориальный проект класса</title>
+    <link rel="preload" as="image" href="pic.jpg" fetchpriority="high">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(145deg, #eef3ea 0%, #e2e9da 100%);
+            color: #1e2a2e;
+            scroll-behavior: smooth;
+        }
+
+        .main-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: rgba(255, 250, 240, 0.96);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.08);
+            border-radius: 32px 32px 32px 32px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        .divider {
+            width: 75%;
+            margin: 4rem auto;
+            border: none;
+            height: 3px;
+            background: repeating-linear-gradient(90deg, #9b6a47, #9b6a47 14px, transparent 14px, transparent 32px);
+            opacity: 0.7;
+        }
+
+        .hero {
+            position: relative;
+            background-color: #2c5a2e;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+            min-height: 92vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0;
+            margin-bottom: 0.5rem;
+            transition: background-image 0.2s ease;
+        }
+        .hero.loaded {
+            background-image: url('pic.jpg');
+        }
+
+        @media (min-width: 1024px) {
+            .hero {
+                background-size: contain;
+                border-radius: 48px 48px 32px 32px;
+            }
+        }
+
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            padding: 0;
+            overflow: hidden;
+            clip: rect(0,0,0,0);
+            border: 0;
+        }
+
+        .projects-nav {
+            margin: 3rem 0 2rem;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.2rem;
+            letter-spacing: 3px;
+            color: #6b3f1c;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            border-bottom: 2px solid #dbbf9b;
+            display: inline-block;
+            width: auto;
+            padding-bottom: 6px;
+        }
+
+        .title-wrapper {
+            display: flex;
+            justify-content: center;
+        }
+
+        .grid-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .project-card-btn {
+            border-radius: 32px;
+            padding: 2rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            box-shadow: 0 20px 28px -12px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(1px);
+            border: 1px solid rgba(255, 248, 225, 0.6);
+        }
+
+        .project-card-btn:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 28px 34px -14px black;
+        }
+
+        .card-heroes {
+            background: linear-gradient(135deg, #fff3e4, #ecd9c0);
+            position: relative;
+        }
+        .card-heroes::before {
+            content: "☁   ☁";
+            position: absolute;
+            font-size: 4rem;
+            color: rgba(100, 70, 40, 0.2);
+            bottom: -5px;
+            left: -10px;
+            pointer-events: none;
+        }
+        .card-heroes::after {
+            content: "  ☁ ☁";
+            position: absolute;
+            font-size: 3.5rem;
+            color: rgba(100, 70, 40, 0.2);
+            top: 5px;
+            right: -5px;
+            pointer-events: none;
+        }
+
+        .card-songs {
+            background: linear-gradient(145deg, #f9e7d4, #fee1c2);
+            position: relative;
+        }
+        .card-songs::before {
+            content: "♪ ♫";
+            position: absolute;
+            font-size: 3.5rem;
+            bottom: 12px;
+            right: 12px;
+            opacity: 0.4;
+            font-family: monospace;
+            color: #2c2c2c;
+            pointer-events: none;
+        }
+        .card-songs::after {
+            content: "♩ ♪";
+            position: absolute;
+            font-size: 2.8rem;
+            top: 12px;
+            left: 8px;
+            opacity: 0.35;
+            font-family: monospace;
+            color: #2c2c2c;
+            pointer-events: none;
+        }
+
+        .card-films {
+            background: repeating-linear-gradient(45deg, #e6dfd1, #e6dfd1 20px, #f2ebdd 20px, #f2ebdd 40px);
+            position: relative;
+        }
+        .card-films::before {
+            content: "🎞 ┃◀ ┃▶";
+            position: absolute;
+            font-size: 1.8rem;
+            bottom: 16px;
+            right: 12px;
+            opacity: 0.5;
+            font-weight: bold;
+            letter-spacing: 2px;
+            pointer-events: none;
+        }
+
+        .card-books {
+            background: #efe2cf;
+            position: relative;
+            background-image: 
+                linear-gradient(to right, #d4c4a8 1px, transparent 1px),
+                linear-gradient(to bottom, #d4c4a8 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .card-books .red-line {
+            position: absolute;
+            top: 0;
+            left: 30px;
+            width: 2px;
+            height: 100%;
+            background: #c53a1f;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        .open-book {
+            position: absolute;
+            bottom: 15px;
+            right: 12px;
+            width: 60px;
+            height: 50px;
+            opacity: 0.55;
+            pointer-events: none;
+        }
+
+        .card-clips {
+            background: linear-gradient(112deg, #f3e5d2, #ffe6cc);
+            position: relative;
+        }
+        .card-clips::before {
+            content: "◉ █ ▌";
+            position: absolute;
+            font-size: 2rem;
+            bottom: 10px;
+            right: 18px;
+            opacity: 0.5;
+            font-weight: bold;
+            letter-spacing: 3px;
+            pointer-events: none;
+        }
+        .lightning-shape {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            width: 65px;
+            height: 55px;
+            opacity: 0.35;
+            pointer-events: none;
+        }
+
+        .card-map {
+            background: #e2d8c6;
+            position: relative;
+            background-image: radial-gradient(circle at 20% 35%, rgba(120, 80, 45, 0.1) 2px, transparent 2px);
+            background-size: 20px 20px;
+        }
+        .card-map .dotted-line {
+            position: absolute;
+            bottom: 20%;
+            right: 12%;
+            width: 70px;
+            height: 45px;
+            border-bottom: 2.5px dashed #b53b1a;
+            border-left: 2.5px dashed #b53b1a;
+            border-radius: 0 0 0 35px;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        .card-map .red-cross {
+            position: absolute;
+            bottom: 12%;
+            right: 5%;
+            font-size: 1.6rem;
+            color: #b53b1a;
+            font-weight: bold;
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        .project-name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #3b2a1f;
+            text-shadow: 2px 2px 0 rgba(255,245,215,0.8);
+            z-index: 2;
+            position: relative;
+        }
+        .project-sub {
+            font-size: 1rem;
+            margin-top: 0.6rem;
+            font-style: italic;
+            color: #5d3a24;
+            font-weight: 500;
+            background: rgba(250, 240, 220, 0.5);
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            backdrop-filter: blur(2px);
+            z-index: 2;
+            position: relative;
+        }
+
+        .project-section {
+            margin: 5rem 0 3rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #6c482c;
+            border-left: 8px solid #c86f3a;
+            padding-left: 1.2rem;
+            margin-bottom: 1.6rem;
+            letter-spacing: -0.3px;
+        }
+
+        .description-box {
+            background: #fffef7;
+            padding: 2.2rem;
+            border-radius: 36px;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.05);
+            font-size: 1.12rem;
+            line-height: 1.55;
+            color: #2c3a2b;
+            border: 1px solid #e6d8c4;
+        }
+
+        .project-link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 1.5rem;
+            background-color: #8b5a3c;
+            color: #fff3e4;
+            padding: 0.8rem 2rem;
+            border-radius: 60px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.2s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+        .project-link-btn:hover {
+            background-color: #5d3a24;
+            transform: scale(0.97);
+        }
+
+        .clips-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin: 2rem 0 1rem;
+        }
+        .clip-item {
+            background: #fff7ec;
+            padding: 1.4rem;
+            border-radius: 28px;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: 0.2s;
+            border-bottom: 4px solid #d9b48b;
+        }
+        .clip-desc {
+            margin-bottom: 1rem;
+            font-weight: 600;
+            background: #f3e9db;
+            padding: 0.4rem;
+            border-radius: 60px;
+            color: #4f2d18;
+            font-size: 1rem;
+        }
+        .clip-detail-text {
+            text-align: left;
+            margin: 0.8rem 0 1.2rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #4a3a2a;
+            background: transparent;
+            padding: 0;
+        }
+        .clip-link {
+            background-color: #3b6978;
+            padding: 0.6rem 1.4rem;
+            border-radius: 40px;
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-block;
+            transition: 0.2s;
+        }
+        .clip-link:hover {
+            background-color: #1f4b58;
+        }
+
+        .footer-note {
+            text-align: center;
+            background: #e2d3c0;
+            padding: 2rem;
+            border-radius: 48px;
+            margin: 4rem 0 3rem;
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: #3f2c1e;
+            box-shadow: inset 0 1px 4px rgba(0,0,0,0.05), 0 6px 12px rgba(0,0,0,0.05);
+        }
+
+        @media (max-width: 850px) {
+            .container { padding: 0 20px; }
+            .grid-buttons {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+            .project-card-btn {
+                min-height: 170px;
+                padding: 1.2rem;
+            }
+            .project-name { font-size: 1.2rem; }
+            .hero { min-height: 65vh; background-size: cover; border-radius: 0; }
+            .section-header { font-size: 1.7rem; }
+            .clips-grid { gap: 1.2rem; }
+            .card-heroes::before { font-size: 2.8rem; }
+            .card-heroes::after { font-size: 2.5rem; }
+            .card-songs::before { font-size: 2.5rem; }
+            .card-songs::after { font-size: 2rem; }
+            .open-book { width: 50px; height: 42px; }
+            .lightning-shape { width: 50px; height: 45px; }
+            .card-map .dotted-line { width: 55px; height: 35px; }
+            .card-map .red-cross { font-size: 1.3rem; }
+            .card-films::before { font-size: 1.4rem; }
+            .card-clips::before { font-size: 1.6rem; }
+        }
+
+        @media (max-width: 600px) {
+            .clips-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .project-name { font-size: 1rem; }
+            .main-wrapper { border-radius: 0; }
+            .hero { min-height: 55vh; }
+            .card-heroes::before { font-size: 2rem; }
+            .card-heroes::after { font-size: 1.8rem; }
+            .card-songs::before { font-size: 1.8rem; }
+            .card-songs::after { font-size: 1.5rem; }
+            .card-films::before { font-size: 1.1rem; }
+            .card-clips::before { font-size: 1.2rem; }
+            .open-book { transform: scale(0.8); bottom: 8px; right: 5px; }
+            .lightning-shape { transform: scale(0.8); }
+            .card-map .dotted-line { width: 45px; height: 28px; border-width: 1.5px; }
+            .card-map .red-cross { font-size: 1rem; }
+        }
+
+        @media (max-width: 480px) {
+            .grid-buttons { gap: 0.8rem; }
+            .project-card-btn { padding: 0.8rem 0.4rem; min-height: 110px; }
+            .project-name { font-size: 0.85rem; }
+            .project-sub { font-size: 0.7rem; }
+            .card-heroes::before, .card-heroes::after,
+            .card-songs::before, .card-songs::after,
+            .card-films::before, .card-clips::before,
+            .open-book, .lightning-shape,
+            .card-map .dotted-line, .card-map .red-cross,
+            .card-books .red-line {
+                display: none;
+            }
+        }
+        html { scroll-padding-top: 30px; }
+    </style>
+</head>
+<body>
+<div class="main-wrapper">
+    <div class="hero" id="heroBlock">
+        <h1 class="visually-hidden">Открываем имена и точки на карте – Мемориальный проект класса</h1>
+    </div>
+
+    <div class="container">
+        <div class="projects-nav">
+            <div class="title-wrapper">
+                <div class="section-title">наши проекты</div>
+            </div>
+            <div class="grid-buttons">
+                <div class="project-card-btn card-heroes" data-target="heroes">
+                    <div class="project-name">Герои:</div>
+                    <div class="project-sub">«Небо памяти»</div>
+                </div>
+                <div class="project-card-btn card-songs" data-target="songs">
+                    <div class="project-name">Песни:</div>
+                    <div class="project-sub">«Звучащая вечность»</div>
+                </div>
+                <div class="project-card-btn card-films" data-target="films">
+                    <div class="project-name">Фильмы:</div>
+                    <div class="project-sub">«Кинолетопись подвига»</div>
+                </div>
+                <div class="project-card-btn card-books" data-target="books">
+                    <div class="project-name">Книги:</div>
+                    <div class="project-sub">«Страницы о героях»</div>
+                    <div class="red-line"></div>
+                    <svg class="open-book" viewBox="0 0 60 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 8 L5 40 L30 45 L30 10 L5 8Z" fill="none" stroke="#5a3d2b" stroke-width="1.2" opacity="0.65"/>
+                        <path d="M55 8 L55 40 L30 45 L30 10 L55 8Z" fill="none" stroke="#5a3d2b" stroke-width="1.2" opacity="0.65"/>
+                        <line x1="30" y1="10" x2="30" y2="45" stroke="#5a3d2b" stroke-width="1.2" opacity="0.6"/>
+                        <line x1="12" y1="18" x2="26" y2="20" stroke="#5a3d2b" stroke-width="0.8" opacity="0.4"/>
+                        <line x1="12" y1="24" x2="26" y2="26" stroke="#5a3d2b" stroke-width="0.8" opacity="0.4"/>
+                        <line x1="34" y1="20" x2="48" y2="18" stroke="#5a3d2b" stroke-width="0.8" opacity="0.4"/>
+                        <line x1="34" y1="26" x2="48" y2="24" stroke="#5a3d2b" stroke-width="0.8" opacity="0.4"/>
+                    </svg>
+                </div>
+                <div class="project-card-btn card-clips" data-target="clips">
+                    <div class="project-name">Клипы:</div>
+                    <div class="project-sub">«Сквозь объектив времени»</div>
+                    <svg class="lightning-shape" viewBox="0 0 65 55" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M32 5 L18 32 L28 32 L24 50 L48 20 L36 20 L40 5 L32 5Z" fill="#c47a2e" stroke="#b56728" stroke-width="1" opacity="0.55"/>
+                    </svg>
+                </div>
+                <div class="project-card-btn card-map" data-target="map">
+                    <div class="project-name">Точки на карте:</div>
+                    <div class="project-sub">«Земля, помнящая шаги»</div>
+                    <div class="dotted-line"></div>
+                    <div class="red-cross">✖</div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <section id="heroes" class="project-section">
+            <div class="section-header">Герои · «Небо памяти»</div>
+            <div class="description-box">
+                <p><strong>"Небо памяти"</strong> - это школьный мемориальный сайт, собравший более 30 личных историй участников войны — прадедушек и прабабушек учеников. 
+                Здесь есть рассказы танкистов и пехотинцев, сапёров и связистов, бывших узников концлагерей и детей, помогавших партизанам. Это живые голоса прошлого — от трогательных семейных преданий до сухих строк наградных листов и дневниковых записей.</p>
+                <a href="https://nebo-pamyati.netlify.app/" target="_blank" class="project-link-btn">Перейти к проекту →</a>
+            </div>
+        </section>
+        <hr class="divider">
+
+        <section id="songs" class="project-section">
+            <div class="section-header">Песни · «Звучащая вечность»</div>
+            <div class="description-box">
+                <p>Описание проекта про песни появится позже. Здесь будут собраны музыкальные произведения, которые сохраняют память о героизме и мужестве.</p>
+                <a href="#" class="project-link-btn" id="songs-temp-btn">Перейти к проекту →</a>
+            </div>
+        </section>
+        <hr class="divider">
+
+        <section id="films" class="project-section">
+            <div class="section-header">Фильмы · «Кинолетопись подвига»</div>
+            <div class="description-box">
+                <p>Описание проекта про фильмы будет дополнено позже. Киноработы, запечатлевшие события войны и судьбы людей.</p>
+                <a href="https://vk.ru/club238204062" target="_blank" class="project-link-btn">Перейти к проекту →</a>
+            </div>
+        </section>
+        <hr class="divider">
+
+        <section id="books" class="project-section">
+            <div class="section-header">Книги · «Страницы о героях»</div>
+            <div class="description-box">
+                <p>Описание проекта про книги будет добавлено. Литературный материал — воспоминания, военная проза, издания, хранящие правду о войне.</p>
+                <a href="https://m.vk.com/club238050538" target="_blank" class="project-link-btn">Перейти к проекту →</a>
+            </div>
+        </section>
+        <hr class="divider">
+
+        <!-- СЕКЦИЯ КЛИПЫ -->
+        <section id="clips" class="project-section">
+            <div class="section-header">Клипы · «Сквозь объектив времени»</div>
+            <div class="description-box">
+                <p>Видеоработы нашего класса, посвящённые памяти о войне и героизме. Каждый клип — это взгляд через объектив.</p>
+                <div class="clips-grid">
+                    <!-- Клип 1: Исследование «Голос города» (Точки на карте) -->
+                    <div class="clip-item">
+                        <div class="clip-desc">Исследование «Голос города»</div>
+                        <div class="clip-detail-text">
+                            В номинации «Точки на карте» группа десятиклассников представляет работу «Что подсказали "Голоса города"» (по следам иммерсивного спектакля). Ребята нашли в Краснодаре точки, связанные с оккупацией 1943 года, и изучили истории подвигов земляков, о которых упоминалось в спектакле.<br><br>
+                            Каждое событие в нашем ролике — не выдумка, за каждым кадром — подлинная история. Благодаря таким работам экскурсия превращается в живой квест и имеет выход на групповые исследования, а знания становятся не просто открытыми, а лично пережитыми.<br><br>
+                        </div>
+                        <a href="https://vk.ru/wall587323772_331" target="_blank" class="clip-link">Перейти к проекту →</a>
+                    </div>
+                    <!-- Клип 2: Капсула времени (без ссылки, пока только описание) -->
+                    <div class="clip-item">
+                        <div class="clip-desc">Капсула времени</div>
+                        <div class="clip-detail-text">
+                            Вторая группа десятиклассников в номинации «Капсула времени» сняла документально-художественный фильм о роли Краснодара и Геленджика в истории войны. Ребята по следам выездной экскурсии создали свой сценарий: они перенеслись мысленно в то героическое время, попробовали увидеть, как это было, и соединить прошлое и настоящее Кубани.<br><br>
+                            Эта работа — не просто рефлексия на прошедшее событие, а искренний творческий взгляд юных патриотов на связь времён в истории.
+                        </div>
+                        <a href="https://vkvideo.ru/video861244763_456239031" target="_blank" class="clip-link">Перейти к проекту →</a>
+                    </div>
+                    <!-- Клип 3: старая ссылка из второго клипа -->
+                    <div class="clip-item">
+                        <div class="clip-desc">Описание клипа 3 (готов)</div>
+                        <div class="clip-detail-text">
+                            Документальный видеоролик, созданный по материалам выездной экскурсии и архивных исследований.
+                        </div>
+                        <a href="https://vkvideo.ru/video560365374_456239080?t=3s" target="_blank" class="clip-link">Перейти к проекту →</a>
+                    </div>
+                    <!-- Клип 4 -->
+                    <div class="clip-item">
+                        <div class="clip-desc">Описание клипа 4 (в разработке)</div>
+                        <div class="clip-detail-text">
+                            Видеоработа готовится к публикации. Следите за обновлениями!
+                        </div>
+                        <a href="#" class="clip-link clip-future">Перейти к проекту →</a>
+                    </div>
+                </div>
+                <p style="margin-top: 1rem; font-size:0.85rem; color:#7a5a44;">*Три клипа уже опубликованы, один готовится.</p>
+            </div>
+        </section>
+        <hr class="divider">
+
+        <section id="map" class="project-section">
+            <div class="section-header">Точки на карте · «Земля, помнящая шаги»</div>
+            <div class="description-box">
+                <p>География памяти: места боёв, памятники, маршруты воинской славы. Сообщество в ВК создаётся.</p>
+                <a href="#" class="project-link-btn" id="map-placeholder">Перейти к проекту →</a>
+            </div>
+        </section>
+        <hr class="divider">
+
+        <div class="footer-note">
+            <p>«Открываем имена и точки на карте» — вечный огонь памяти, зажжённый нашим классом. <br> Пусть каждый герой, песня, кадр и точка на карте напоминают: мы помним, мы гордимся.</p>
+            <p style="margin-top: 0.8rem; font-size:0.85rem;">© Мемориальный проект класса, 2026</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const heroElement = document.getElementById('heroBlock');
+        if (heroElement) {
+            const img = new Image();
+            img.onload = () => heroElement.classList.add('loaded');
+            img.onerror = () => heroElement.style.backgroundColor = '#2c5a2e';
+            img.src = 'pic.jpg';
+            if (img.complete) heroElement.classList.add('loaded');
+        }
+
+        const mapping = { heroes: 'heroes', songs: 'songs', films: 'films', books: 'books', clips: 'clips', map: 'map' };
+        document.querySelectorAll('.project-card-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const target = btn.getAttribute('data-target');
+                if (target && mapping[target]) {
+                    document.getElementById(mapping[target])?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        const songsBtn = document.getElementById('songs-temp-btn');
+        if(songsBtn) songsBtn.addEventListener('click', (e) => { e.preventDefault(); alert('Ссылка на проект «Звучащая вечность» появится позже.'); });
+        const mapBtn = document.getElementById('map-placeholder');
+        if(mapBtn) mapBtn.addEventListener('click', (e) => { e.preventDefault(); alert('Сообщество «Земля, помнящая шаги» в разработке.'); });
+        document.querySelectorAll('.clip-future').forEach(link => {
+            link.addEventListener('click', (e) => { e.preventDefault(); alert('Клип готовится к публикации.'); });
+        });
+    })();
+</script>
+</body>
+</html>
